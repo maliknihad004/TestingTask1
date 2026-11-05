@@ -20,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<VehicleRepository>();
 builder.Services.AddScoped<VehicleService>();
+builder.Services.AddScoped<CustomerRepository>();
 
 var key = Environment.GetEnvironmentVariable("JWT_KEY")!;
 
@@ -37,6 +38,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<ReservationRepository>();
+builder.Services.AddScoped<ReservationService>();
 
 var app = builder.Build();
 
