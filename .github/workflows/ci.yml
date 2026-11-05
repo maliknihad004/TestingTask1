@@ -31,3 +31,42 @@ jobs:
 
       - name: Run tests
         run: dotnet test TestingTask1.Tests/TestingTask1.Tests.csproj --no-build
+        
+  deploy-staging:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Create staging environment
+        run: |
+          echo 'DB_CONNECTION_STRING=Host=localhost;Database=ShowroomTest;Username=postgres;Password=test' > .env
+          echo 'JWT_KEY=ThisIsOnlyATestKeyForGitHubActions1234567890' >> .env
+
+      - name: Publish API
+        run: dotnet publish TestingTask1/TestingTask1.csproj -c Release -o staging
+
+      - name: Test staging API
+        run: |
+          ASPNETCORE_ENVIRONMENT=Development dotnet staging/TestingTask1.dll --urls http://127.0.0.1:5055 > staging.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:5055/openapi/v1.json > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat staging.log
+          exit 1
+
+      - name: Save staging build
+        uses: actions/upload-artifact@v4
+        with:
+          name: showroom-staging
+          path: staging/
