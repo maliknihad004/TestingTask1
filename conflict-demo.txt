@@ -1,1 +1,1 @@
-Status: Approved by Developer B
+Status: Approved by Developer A and Developer B
