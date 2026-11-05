@@ -118,4 +118,3 @@ Coverage results are generated inside the `TestResults` folder.
 - Vehicle Module Line Coverage: 96.03%
 - Vehicle Module Branch Coverage: 87.04%
 
-See `COVERAGE_REPORT.md` for more details.
