@@ -76,10 +76,10 @@ public class VehiclesApiTests
         await SaveVehicle(factory, reserved);
 
         var response = await client.GetAsync("/api/vehicles");
-        var vehicles = await response.Content.ReadFromJsonAsync<List<Vehicle>>();
+        var vehicles = await response.Content.ReadFromJsonAsync<VehiclePage>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Single(vehicles!);
+        Assert.Single(vehicles!.Items);
     }
 
     [Fact]
@@ -93,10 +93,10 @@ public class VehiclesApiTests
         await SaveVehicle(factory, reserved);
 
         var response = await client.GetAsync("/api/vehicles?brand=Chery&model=Tiggo%207");
-        var vehicles = await response.Content.ReadFromJsonAsync<List<Vehicle>>();
+        var vehicles = await response.Content.ReadFromJsonAsync<VehiclePage>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Single(vehicles!);
+        Assert.Single(vehicles!.Items);
     }
 
     [Fact]

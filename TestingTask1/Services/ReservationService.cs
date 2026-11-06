@@ -9,12 +9,18 @@ public class ReservationService
     private readonly ReservationRepository _repository;
     private readonly CustomerRepository _customers;
     private readonly VehicleRepository _vehicles;
+    private readonly VehicleCache? _cache;
 
-    public ReservationService(ReservationRepository repository, CustomerRepository customers, VehicleRepository vehicles)
+    public ReservationService(
+        ReservationRepository repository,
+        CustomerRepository customers,
+        VehicleRepository vehicles,
+        VehicleCache? cache = null)
     {
         _repository = repository;
         _customers = customers;
         _vehicles = vehicles;
+        _cache = cache;
     }
 
     public Task<List<Reservation>> GetAllAsync(int userId, string role)
@@ -69,6 +75,8 @@ public class ReservationService
         await _repository.AddAsync(reservation);
         await _repository.SaveChangesAsync();
 
+        _cache?.Invalidate();
+
         return reservation.Id;
     }
 
@@ -91,6 +99,9 @@ public class ReservationService
             reservation.Vehicle.AvailabilityStatus = AvailabilityStatus.Available;
 
         await _repository.SaveChangesAsync();
+
+        _cache?.Invalidate();
+
         return 1;
     }
 }
