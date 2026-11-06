@@ -17,16 +17,18 @@ public class VehiclesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAvailable(string? brand, string? model)
+    public async Task<IActionResult> GetAvailable([FromQuery] VehicleSearch search)
     {
-        var vehicles = await _service.GetAvailableAsync(brand, model);
-        return Ok(vehicles);
+        if (!_service.IsValidSearch(search))
+            return BadRequest("Invalid filter parameters");
+
+        return Ok(await _service.SearchAsync(search));
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var vehicle = await _service.GetByIdAsync(id);
+        var vehicle = await _service.GetDetailsAsync(id);
         if (vehicle == null)
             return NotFound();
 
